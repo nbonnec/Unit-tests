@@ -5,15 +5,17 @@ import re
 import sys
 import unicodedata
 import tempfile
+import subprocess
 
-def remove_score(s):
+def replace_score(s):
+    """ Replace scores by underscores """
     return re.sub('-', '_', s)
 
 def remove_c_ext(s):
     return re.sub("\.c", '', s)
 
-# Remove all accents from the string
 def clean_string(s):
+    """ Remove all accents from the string """
     if isinstance(s, str):
         s = unicode(s, "utf8", "replace")
     s = unicodedata.normalize('NFD', s)
@@ -60,12 +62,12 @@ except IOError:
 
 header_module = module + ".h"
 
-# Filling the main program.
+# filling the main program.
 f_main.write("/*\n * This file has been generated.\n */")
 f_main.write("\n\n#include \"cu-" + header_module + "\"\n\n")
 
 # cleaning the file_name
-module = remove_score(clean_string(module))
+module = replace_score(clean_string(module))
 
 f_main.write("int main(void)\n{")
 f_main.write("\n    cu_" + module.lower() + "_tests();\n")
@@ -73,8 +75,8 @@ f_main.write("\n    return 0;")
 f_main.write("\n}\n")
 f_main.close()
 
-# Make process
-os.system("make FILE=" + source_module)
+# make process
+retcode = subprocess.call(["make", "FILE=" + source_module])
 
 try:
     f_module = open(source_module, 'w')
@@ -89,6 +91,8 @@ f_module.write(f_temp.read())
 f_temp.close()
 f_module.close()
 
-# Run unit tests
-os.system("./tests.exe")
+# if no errors in make process
+if retcode == 0:
+    # Run unit tests
+    os.system("./tests.exe")
 
