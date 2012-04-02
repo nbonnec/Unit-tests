@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# TODO: generate cu-XXX.h
+#       generate a skeleton for cu-XXX.c
+
 import os
 import re
 import sys

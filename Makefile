@@ -1,3 +1,4 @@
+VPATH =
 
 CC = gcc
 LD = gcc
@@ -40,7 +41,7 @@ cleandep:
 	$(RM) depend
 
 $(DEPS): $(SRC)
-	$(DEP) -M $(INCLUDE) $(SRC) > $(DEPS)
+	$(DEP) -M $(INCLUDE) $^ > $(DEPS)
 
 ifeq ($(findstring clean, $(MAKECMDGOALS)),)
 -include $(DEPS)
